@@ -1,8 +1,13 @@
-import { access, writeFile, readFile } from 'fs/promises';
+import { access, writeFile, readFile, constants } from 'fs/promises';
 import { homedir } from 'os';
 import { join } from 'path';
 
 const filePath = join(homedir(), 'weather-data.json');
+
+export const TOKEN_DICTIONARY = {
+	city: 'city',
+	token: 'token'
+}
 
 export const saveKeyValue = async (key, value) => {
 	let data = {};
@@ -28,7 +33,7 @@ export const getKeyValue = async (key) => {
 
 const isFileExists = async (path) => {
 	try {
-		await promises.access(path, fs.constants.W_OK | fs.constants.R_OK);
+		await access(path, constants.W_OK | constants.R_OK);
 		return true;
 	} catch (err) {
 		return false;
