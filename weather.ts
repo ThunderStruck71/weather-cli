@@ -3,9 +3,10 @@ import { getArgs } from './helpers/args.js';
 import { getWeather } from './services/api.service.js';
 import { printError, printHelp, printSuccess, printWeather } from './services/log.service.js';
 import { getKeyValue, saveKeyValue, TOKEN_DICTIONARY } from './services/storage.service.js';
+import { IGetWeatherError } from './types/api/IGetWeatherError.js';
 
-const saveToken = async (token) => {
-	if (!token.length) {
+const saveToken = async (token: string | boolean) => {
+	if (typeof token == 'boolean' || (typeof token == 'string' && !token.length)) {
 		printError('Не передан токен');
 		return;
 	}
@@ -14,35 +15,41 @@ const saveToken = async (token) => {
 		await saveKeyValue(TOKEN_DICTIONARY.token, token);
 		printSuccess('Токен сохранен');
 	} catch (err) {
-		printError(err.message);
+		printError((err as Error).message);
 	}
 }
 
-const saveCity = async (city) => {
-	if (!city.length) {
+const saveCity = async (city: string | boolean) => {
+	if (typeof city == 'boolean' || (typeof city == 'string' && !city.length)) {
 		printError('Не передан город');
 		return;
 	}
+	
 	try {
 		await saveKeyValue(TOKEN_DICTIONARY.city, city);
 		printSuccess('Город сохранён');
 	} catch (err) {
-		printError(err.message);
+		printError((err as Error).message);
 	}
 }
 
 const getForecast = async () => {
 	try {
 		const city = process.env.CITY ?? await getKeyValue(TOKEN_DICTIONARY.city);
+
+		if (!city?.length) {
+			return;
+		}
+
 		const weather = await getWeather(city);
 		printWeather(weather);
 	} catch (err) {
-		if (err?.response?.status === 404) {
+		if ((err as IGetWeatherError)?.response?.status === 404) {
 			printError('Неверно указан город');
-		} else if (err?.response?.status === 401) {
+		} else if ((err as IGetWeatherError)?.response?.status === 401) {
 			printError('Неверно указан токен');
 		} else {
-			printError(err.message);
+			printError((err as Error).message);
 		}
 	}
 }

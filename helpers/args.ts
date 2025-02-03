@@ -1,8 +1,10 @@
-export const getArgs = (args) => {
-	const res = {}
+import { IGetObjectResult } from "../types/IGetObjectResult";
+
+export const getArgs = (args: string[]): IGetObjectResult => {
+	const res: IGetObjectResult = {}
 	const [executor, file, ...rest] = args;
 
-	rest.forEach((el, index, array) => {
+	rest.forEach((el: string, index: number, array: string[]) => {
 		if (el.charAt(0) === '-') {
 			if (index === array.length - 1) {
 				res[el.substring(1)] = true;

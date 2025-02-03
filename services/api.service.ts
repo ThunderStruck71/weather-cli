@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getKeyValue, TOKEN_DICTIONARY } from "./storage.service.js"
 
-export const getIcon = (icon) => {
+export const getIcon = (icon: string): string => {
 	switch (icon.slice(0, -1)) {
 		case '01':
 			return '☀️';
@@ -21,10 +21,12 @@ export const getIcon = (icon) => {
 			return '❄️';
 		case '50':
 			return '🌫️';
+		default:
+			return '';
 	}
 };
 
-export const getWeather = async (city) => {
+export const getWeather = async (city: string): Promise<any> => {
 	const token = process.env.TOKEN ?? await getKeyValue(TOKEN_DICTIONARY.token);
 
 	if (!token) {
